@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 서비스 허브</title>
+<style>
+  :root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #e0e7ff;
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --sidebar-w: 220px;
+    --topnav-h: 60px;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── TOP NAV ── */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--topnav-h);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 8px;
+    z-index: 100;
+    box-shadow: 0 1px 8px rgba(0,0,0,.06);
+  }
+
+  .logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-right: 24px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .top-tabs {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .top-tab {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: all .2s;
+    white-space: nowrap;
+  }
+
+  .top-tab:hover { background: var(--primary-light); color: var(--primary); }
+  .top-tab.active { background: var(--primary); color: #fff; }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: flex;
+    margin-top: var(--topnav-h);
+    min-height: calc(100vh - var(--topnav-h));
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    position: fixed;
+    top: var(--topnav-h);
+    left: 0;
+    bottom: 0;
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 20px 12px;
+  }
+
+  .side-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+
+  .side-btn {
+    display: block;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    text-align: left;
+    transition: all .18s;
+    font-weight: 500;
+  }
+
+  .side-btn:hover { background: var(--primary-light); color: var(--primary); }
+  .side-btn.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 32px 36px;
+    max-width: 1200px;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .section-sub {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+
+  /* ── CARD GRID ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    cursor: pointer;
+    transition: all .22s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--primary);
+    opacity: 0;
+    transition: opacity .2s;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(99,102,241,.15);
+    border-color: var(--primary-light);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card-icon {
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .card-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .card-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .card-badge {
+    font-size: 0.72rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+    align-self: flex-start;
+  }
+
+  .card-link {
+    font-size: 0.78rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* ── ALL VIEW ── */
+  .cat-section { margin-bottom: 48px; }
+  .cat-section h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cat-section h2::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🤖 AI Hub</div>
+  <div class="top-tabs" id="topTabs"></div>
+</header>
+
+<div class="layout">
+  <aside id="sidebar">
+    <div id="sideContent"></div>
+  </aside>
+  <main id="mainContent"></main>
+</div>
+
+<script>
+const DB = {
+  'AI 어시스턴트': {
+    icon: '💬',
+    desc: '대화형 AI 챗봇과 AI 검색 서비스',
+    subs: {
+      '챗봇': [
+        { name: 'Claude', url: 'https://claude.ai', desc: 'Anthropic의 안전한 AI 어시스턴트. 글쓰기·분석·코딩에 탁월', badge: 'Anthropic', icon: '🟠' },
+        { name: 'ChatGPT', url: 'https://chatgpt.com', desc: 'OpenAI의 대화형 AI. GPT-4o 기반 멀티모달 지원', badge: 'OpenAI', icon: '🟢' },
+        { name: 'Gemini', url: 'https://gemini.google.com', desc: 'Google의 멀티모달 AI. Google 서비스와 긴밀 연동', badge: 'Google', icon: '🔵' },
+        { name: 'Grok', url: 'https://grok.com', desc: 'xAI의 AI 어시스턴트. 실시간 X(트위터) 데이터 접근', badge: 'xAI', icon: '⚫' },
+        { name: 'Genspark', url: 'https://www.genspark.ai', desc: 'AI 에이전트 기반 검색 및 정보 집계 서비스', badge: 'Genspark', icon: '⚡' },
+        { name: 'Copilot', url: 'https://copilot.microsoft.com', desc: 'Microsoft의 AI 어시스턴트. GPT-4 기반 Bing 통합', badge: 'Microsoft', icon: '🪟' },
+        { name: 'Meta AI', url: 'https://www.meta.ai', desc: 'Meta의 AI 어시스턴트. Llama 모델 기반', badge: 'Meta', icon: '🔷' },
+      ],
+      'AI 검색': [
+        { name: 'Perplexity', url: 'https://www.perplexity.ai', desc: '실시간 웹 검색 기반 AI 답변. 출처 인용 제공', badge: 'Perplexity', icon: '🔍' },
+        { name: 'You.com', url: 'https://you.com', desc: 'AI 통합 검색 엔진. 다양한 AI 모드 지원', badge: 'You.com', icon: '🌐' },
+        { name: 'Phind', url: 'https://www.phind.com', desc: '개발자 특화 AI 검색. 코드·기술 문서 최적화', badge: 'Phind', icon: '💡' },
+      ],
+    }
+  },
+
+  'AI 창작': {
+    icon: '🎨',
+    desc: '이미지·음악·비디오 생성 AI 서비스',
+    subs: {
+      '이미지 생성': [
+        { name: 'Whisk', url: 'https://labs.google/fx/tools/whisk', desc: 'Google의 이미지 리믹스 AI. 이미지를 합성·변형', badge: 'Google', icon: '🎨' },
+        { name: 'Midjourney', url: 'https://www.midjourney.com', desc: '최고 품질의 AI 이미지 생성. 예술적 스타일 특화', badge: 'Midjourney', icon: '🖼️' },
+        { name: 'DALL·E 3', url: 'https://openai.com/dall-e-3', desc: 'OpenAI의 텍스트-이미지 생성 모델', badge: 'OpenAI', icon: '🎭' },
+        { name: 'Adobe Firefly', url: 'https://firefly.adobe.com', desc: 'Adobe의 상업적 안전 AI 이미지 생성 서비스', badge: 'Adobe', icon: '🔴' },
+        { name: 'Leonardo AI', url: 'https://leonardo.ai', desc: '게임·콘텐츠 특화 AI 이미지 생성 플랫폼', badge: 'Leonardo', icon: '🦁' },
+        { name: 'Ideogram', url: 'https://ideogram.ai', desc: '텍스트 렌더링이 뛰어난 AI 이미지 생성 서비스', badge: 'Ideogram', icon: '✍️' },
+        { name: 'Stable Diffusion', url: 'https://stability.ai', desc: 'Stability AI의 오픈소스 이미지 생성 모델', badge: 'Stability AI', icon: '🌊' },
+      ],
+      '음악 생성': [
+        { name: 'SUNO', url: 'https://suno.com', desc: '가사와 멜로디 포함 완성된 곡을 AI로 생성', badge: 'Suno', icon: '🎵' },
+        { name: 'Udio', url: 'https://www.udio.com', desc: '고품질 AI 음악 생성. 다양한 장르 지원', badge: 'Udio', icon: '🎶' },
+        { name: 'ElevenLabs', url: 'https://elevenlabs.io', desc: 'AI 음성 합성 및 클로닝. 다국어 TTS 서비스', badge: 'ElevenLabs', icon: '🎙️' },
+      ],
+      '비디오 생성': [
+        { name: 'RunwayML', url: 'https://runwayml.com', desc: 'AI 비디오 생성·편집. Gen-3 모델 탑재', badge: 'Runway', icon: '🎬' },
+        { name: 'Pika', url: 'https://pika.art', desc: '텍스트·이미지로 비디오 생성하는 AI 플랫폼', badge: 'Pika', icon: '🎥' },
+        { name: 'Kling AI', url: 'https://klingai.com', desc: 'Kuaishou의 고품질 AI 비디오 생성 서비스', badge: 'Kling', icon: '📽️' },
+        { name: 'Sora', url: 'https://sora.com', desc: 'OpenAI의 텍스트-비디오 생성 모델', badge: 'OpenAI', icon: '🌀' },
+        { name: 'Veo 3', url: 'https://deepmind.google/technologies/veo/', desc: 'Google DeepMind의 최신 비디오 생성 AI', badge: 'Google', icon: '🎞️' },
+      ],
+    }
+  },
+
+  'AI 개발': {
+    icon: '💻',
+    desc: 'AI 코드 생성 및 개발 지원 도구',
+    subs: {
+      '코드 어시스턴트': [
+        { name: 'Lovable', url: 'https://lovable.dev', desc: '프롬프트로 풀스택 앱을 빌드하는 AI 개발 플랫폼', badge: 'Lovable', icon: '❤️' },
+        { name: 'V0', url: 'https://v0.dev', desc: 'Vercel의 AI UI 생성 도구. React/Tailwind 컴포넌트 생성', badge: 'Vercel', icon: '▲' },
+        { name: 'Cursor', url: 'https://cursor.com', desc: 'AI 코드 에디터. Claude·GPT 통합 자동완성', badge: 'Cursor', icon: '⌨️' },
+        { name: 'GitHub Copilot', url: 'https://github.com/features/copilot', desc: 'GitHub의 AI 코드 제안. IDE 플러그인 지원', badge: 'GitHub', icon: '🐙' },
+        { name: 'Bolt', url: 'https://bolt.new', desc: 'StackBlitz의 AI 풀스택 개발 환경', badge: 'StackBlitz', icon: '⚡' },
+        { name: 'Replit', url: 'https://replit.com', desc: '브라우저 기반 AI 통합 코딩 환경', badge: 'Replit', icon: '👾' },
+        { name: 'Windsurf', url: 'https://windsurf.com', desc: 'Codeium의 AI 코드 에디터. Cascade 에이전트 탑재', badge: 'Codeium', icon: '🏄' },
+      ],
+      '프롬프트 & 자동화': [
+        { name: 'Dify', url: 'https://dify.ai', desc: 'LLM 앱 개발 플랫폼. 워크플로우·RAG 지원', badge: 'Dify', icon: '🔧' },
+        { name: 'LangChain', url: 'https://langchain.com', desc: 'LLM 앱 개발 프레임워크. 에이전트 체인 구성', badge: 'LangChain', icon: '🔗' },
+        { name: 'n8n', url: 'https://n8n.io', desc: 'AI 통합 워크플로우 자동화 플랫폼', badge: 'n8n', icon: '🤖' },
+      ],
+    }
+  },
+
+  'AI 플랫폼': {
+    icon: '🏗️',
+    desc: 'AI 모델 허브, API, 연구 플랫폼',
+    subs: {
+      '모델 & 데이터': [
+        { name: 'Hugging Face', url: 'https://huggingface.co', desc: '오픈소스 AI 모델·데이터셋 허브. 머신러닝 커뮤니티', badge: 'HuggingFace', icon: '🤗' },
+        { name: 'Replicate', url: 'https://replicate.com', desc: '클라우드에서 AI 모델을 API로 실행하는 플랫폼', badge: 'Replicate', icon: '🔄' },
+        { name: 'Ollama', url: 'https://ollama.com', desc: '로컬에서 LLM을 실행하는 오픈소스 도구', badge: 'Ollama', icon: '🦙' },
+        { name: 'Together AI', url: 'https://together.ai', desc: '오픈소스 AI 모델 추론·파인튜닝 클라우드', badge: 'Together', icon: '🤝' },
+      ],
+      'API & 클라우드': [
+        { name: 'Anthropic API', url: 'https://console.anthropic.com', desc: 'Claude API 관리 콘솔. 사용량·키 관리', badge: 'Anthropic', icon: '🔑' },
+        { name: 'OpenAI API', url: 'https://platform.openai.com', desc: 'GPT·DALL-E·Whisper API 플랫폼', badge: 'OpenAI', icon: '🔑' },
+        { name: 'Google AI Studio', url: 'https://aistudio.google.com', desc: 'Gemini API 개발 환경. 프롬프트 테스트', badge: 'Google', icon: '🔑' },
+        { name: 'Groq', url: 'https://groq.com', desc: '초고속 LLM 추론 API. LPU 칩 기반', badge: 'Groq', icon: '⚡' },
+      ],
+      '개발 & 협업': [
+        { name: 'GitHub', url: 'https://github.com', desc: '코드 호스팅·협업 플랫폼. AI 기능 강화 중', badge: 'GitHub', icon: '🐙' },
+        { name: 'Kaggle', url: 'https://kaggle.com', desc: 'AI·머신러닝 대회 및 데이터셋 공유 플랫폼', badge: 'Kaggle', icon: '📊' },
+        { name: 'Papers with Code', url: 'https://paperswithcode.com', desc: 'AI 논문 + 구현 코드 연동 리서치 플랫폼', badge: 'PwC', icon: '📄' },
+        { name: 'Weights & Biases', url: 'https://wandb.ai', desc: 'ML 실험 추적·모델 관리 플랫폼', badge: 'W&B', icon: '📈' },
+      ],
+    }
+  },
+};
+
+let currentCat = Object.keys(DB)[0];
+let currentSub = Object.keys(DB[currentCat].subs)[0];
+
+function renderTopTabs() {
+  const container = document.getElementById('topTabs');
+  container.innerHTML = Object.entries(DB).map(([cat, val]) =>
+    `<button class="top-tab ${cat === currentCat ? 'active' : ''}" onclick="selectCat('${cat}')">
+      ${val.icon} ${cat}
+    </button>`
+  ).join('');
+}
+
+function renderSidebar() {
+  const subs = Object.keys(DB[currentCat].subs);
+  document.getElementById('sideContent').innerHTML =
+    `<div class="side-label">${currentCat}</div>` +
+    subs.map(sub =>
+      `<button class="side-btn ${sub === currentSub ? 'active' : ''}" onclick="selectSub('${sub}')">
+        ${sub}
+      </button>`
+    ).join('');
+}
+
+function renderCards(items) {
+  return `<div class="card-grid">` +
+    items.map(item =>
+      `<a class="card" href="${item.url}" target="_blank" rel="noopener">
+        <div class="card-icon">${item.icon}</div>
+        <div class="card-name">${item.name}</div>
+        <div class="card-desc">${item.desc}</div>
+        <div class="card-badge">${item.badge}</div>
+        <div class="card-link">↗ 바로가기</div>
+      </a>`
+    ).join('') +
+    `</div>`;
+}
+
+function renderMain() {
+  const catData = DB[currentCat];
+  const isAll = currentSub === '__all__';
+  const main = document.getElementById('mainContent');
+
+  if (isAll) {
+    let html = `<div class="section-title">${catData.icon} ${currentCat}</div>
+      <div class="section-sub">${catData.desc}</div>`;
+    Object.entries(catData.subs).forEach(([sub, items]) => {
+      html += `<div class="cat-section">
+        <h2>${sub}</h2>
+        ${renderCards(items)}
+      </div>`;
+    });
+    main.innerHTML = html;
+  } else {
+    const items = catData.subs[currentSub];
+    main.innerHTML = `
+      <div class="section-title">${currentSub}</div>
+      <div class="section-sub">${catData.desc}</div>
+      ${renderCards(items)}
+    `;
+  }
+}
+
+function selectCat(cat) {
+  currentCat = cat;
+  currentSub = '__all__';
+  renderTopTabs();
+  renderSidebar();
+  renderMain();
+  updateSideAll();
+}
+
+function selectSub(sub) {
+  currentSub = sub;
+  renderSidebar();
+  renderMain();
+  updateSideAll();
+}
+
+function updateSideAll() {
+  const allBtn = document.getElementById('allBtn');
+  if (allBtn) allBtn.className = `side-btn ${currentSub === '__all__' ? 'active' : ''}`;
+}
+
+function init() {
+  currentSub = '__all__';
+  renderTopTabs();
+
+  // Sidebar: add "전체 보기" + sub list
+  const subs = Object.keys(DB[currentCat].subs);
+  document.getElementById('sideContent').innerHTML =
+    `<div class="side-label">${currentCat}</div>
+     <button id="allBtn" class="side-btn active" onclick="selectAllSub()">전체 보기</button>` +
+    subs.map(sub =>
+      `<button class="side-btn" onclick="selectSub('${sub}')">${sub}</button>`
+    ).join('');
+
+  renderMain();
+}
+
+function selectAllSub() {
+  currentSub = '__all__';
+  renderSidebar2();
+  renderMain();
+}
+
+function renderSidebar2() {
+  const subs = Object.keys(DB[currentCat].subs);
+  document.getElementById('sideContent').innerHTML =
+    `<div class="side-label">${currentCat}</div>
+     <button id="allBtn" class="side-btn ${currentSub === '__all__' ? 'active' : ''}" onclick="selectAllSub()">전체 보기</button>` +
+    subs.map(sub =>
+      `<button class="side-btn ${sub === currentSub ? 'active' : ''}" onclick="selectSub('${sub}')">${sub}</button>`
+    ).join('');
+}
+
+// Override renderSidebar to include "전체 보기"
+function renderSidebar() {
+  renderSidebar2();
+}
+
+// Override selectCat
+function selectCat(cat) {
+  currentCat = cat;
+  currentSub = '__all__';
+  renderTopTabs();
+  renderSidebar2();
+  renderMain();
+}
+
+init();
+</script>
+</body>
+</html>
