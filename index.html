@@ -58,6 +58,8 @@
     display: flex;
     gap: 4px;
     flex: 1;
+    overflow: hidden;
+    min-width: 0;
   }
 
   .visitor-counter {
@@ -71,6 +73,7 @@
     font-size: 0.8rem;
     color: var(--text-muted);
     white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .visitor-counter span {
@@ -520,10 +523,10 @@ function selectCat(cat) {
 init();
 
 // 방문자 카운터
-fetch('https://api.countapi.xyz/hit/kjin618-rgb/mysite-2606')
+fetch('https://api.counterapi.dev/v1/kjin618-rgb/mysite-2606/up')
   .then(r => r.json())
   .then(data => {
-    document.getElementById('visitorCount').textContent = Number(data.value).toLocaleString();
+    document.getElementById('visitorCount').textContent = Number(data.count).toLocaleString();
   })
   .catch(() => {
     document.getElementById('visitorCount').textContent = '–';
