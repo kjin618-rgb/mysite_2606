@@ -60,6 +60,25 @@
     flex: 1;
   }
 
+  .visitor-counter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .visitor-counter span {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 0.88rem;
+  }
+
   .top-tab {
     padding: 8px 18px;
     border-radius: 8px;
@@ -248,6 +267,7 @@
 <header>
   <div class="logo">🤖 AI Hub</div>
   <div class="top-tabs" id="topTabs"></div>
+  <div class="visitor-counter">👁 방문자 <span id="visitorCount">...</span></div>
 </header>
 
 <div class="layout">
@@ -498,6 +518,16 @@ function selectCat(cat) {
 }
 
 init();
+
+// 방문자 카운터
+fetch('https://api.countapi.xyz/hit/kjin618-rgb/mysite-2606')
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('visitorCount').textContent = Number(data.value).toLocaleString();
+  })
+  .catch(() => {
+    document.getElementById('visitorCount').textContent = '–';
+  });
 </script>
 </body>
 </html>
