@@ -65,12 +65,29 @@
   .visitor-counter {
     display: flex;
     align-items: center;
+    gap: 0;
     flex-shrink: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1;
   }
 
-  .visitor-counter img {
-    height: 22px;
-    display: block;
+  .visitor-counter .vc-label {
+    background: var(--primary);
+    color: #fff;
+    padding: 5px 10px;
+    letter-spacing: 0.04em;
+  }
+
+  .visitor-counter .vc-count {
+    background: var(--bg);
+    color: var(--primary);
+    padding: 5px 10px;
+    min-width: 36px;
+    text-align: center;
   }
 
   .top-tab {
@@ -262,7 +279,8 @@
   <div class="logo">🤖 AI Hub</div>
   <div class="top-tabs" id="topTabs"></div>
   <div class="visitor-counter">
-    <img src="https://visitor-badge.laobi.icu/badge?page_id=kjin618-rgb.mysite_2606&left_color=%236366f1&right_color=%234f46e5&left_text=%EB%B0%A9%EB%AC%B8%EC%9E%90" alt="방문자 수" />
+    <span class="vc-label">👁 방문자</span>
+    <span class="vc-count" id="visitorCount">…</span>
   </div>
 </header>
 
@@ -514,6 +532,15 @@ function selectCat(cat) {
 }
 
 init();
+
+fetch('https://api.counterapi.dev/v1/kjin618-rgb/mysite-2606/up')
+  .then(r => r.json())
+  .then(d => {
+    document.getElementById('visitorCount').textContent = Number(d.count).toLocaleString();
+  })
+  .catch(() => {
+    document.getElementById('visitorCount').textContent = '–';
+  });
 
 </script>
 </body>
