@@ -403,11 +403,10 @@ const DB = {
 };
 
 let currentCat = Object.keys(DB)[0];
-let currentSub = Object.keys(DB[currentCat].subs)[0];
+let currentSub = '__all__';
 
 function renderTopTabs() {
-  const container = document.getElementById('topTabs');
-  container.innerHTML = Object.entries(DB).map(([cat, val]) =>
+  document.getElementById('topTabs').innerHTML = Object.entries(DB).map(([cat, val]) =>
     `<button class="top-tab ${cat === currentCat ? 'active' : ''}" onclick="selectCat('${cat}')">
       ${val.icon} ${cat}
     </button>`
@@ -417,11 +416,10 @@ function renderTopTabs() {
 function renderSidebar() {
   const subs = Object.keys(DB[currentCat].subs);
   document.getElementById('sideContent').innerHTML =
-    `<div class="side-label">${currentCat}</div>` +
+    `<div class="side-label">${currentCat}</div>
+     <button id="allBtn" class="side-btn ${currentSub === '__all__' ? 'active' : ''}" onclick="selectAllSub()">전체 보기</button>` +
     subs.map(sub =>
-      `<button class="side-btn ${sub === currentSub ? 'active' : ''}" onclick="selectSub('${sub}')">
-        ${sub}
-      </button>`
+      `<button class="side-btn ${sub === currentSub ? 'active' : ''}" onclick="selectSub('${sub}')">${sub}</button>`
     ).join('');
 }
 
@@ -441,17 +439,12 @@ function renderCards(items) {
 
 function renderMain() {
   const catData = DB[currentCat];
-  const isAll = currentSub === '__all__';
   const main = document.getElementById('mainContent');
-
-  if (isAll) {
+  if (currentSub === '__all__') {
     let html = `<div class="section-title">${catData.icon} ${currentCat}</div>
       <div class="section-sub">${catData.desc}</div>`;
     Object.entries(catData.subs).forEach(([sub, items]) => {
-      html += `<div class="cat-section">
-        <h2>${sub}</h2>
-        ${renderCards(items)}
-      </div>`;
+      html += `<div class="cat-section"><h2>${sub}</h2>${renderCards(items)}</div>`;
     });
     main.innerHTML = html;
   } else {
@@ -470,64 +463,23 @@ function selectCat(cat) {
   renderTopTabs();
   renderSidebar();
   renderMain();
-  updateSideAll();
 }
 
 function selectSub(sub) {
   currentSub = sub;
   renderSidebar();
   renderMain();
-  updateSideAll();
-}
-
-function updateSideAll() {
-  const allBtn = document.getElementById('allBtn');
-  if (allBtn) allBtn.className = `side-btn ${currentSub === '__all__' ? 'active' : ''}`;
-}
-
-function init() {
-  currentSub = '__all__';
-  renderTopTabs();
-
-  // Sidebar: add "전체 보기" + sub list
-  const subs = Object.keys(DB[currentCat].subs);
-  document.getElementById('sideContent').innerHTML =
-    `<div class="side-label">${currentCat}</div>
-     <button id="allBtn" class="side-btn active" onclick="selectAllSub()">전체 보기</button>` +
-    subs.map(sub =>
-      `<button class="side-btn" onclick="selectSub('${sub}')">${sub}</button>`
-    ).join('');
-
-  renderMain();
 }
 
 function selectAllSub() {
   currentSub = '__all__';
-  renderSidebar2();
+  renderSidebar();
   renderMain();
 }
 
-function renderSidebar2() {
-  const subs = Object.keys(DB[currentCat].subs);
-  document.getElementById('sideContent').innerHTML =
-    `<div class="side-label">${currentCat}</div>
-     <button id="allBtn" class="side-btn ${currentSub === '__all__' ? 'active' : ''}" onclick="selectAllSub()">전체 보기</button>` +
-    subs.map(sub =>
-      `<button class="side-btn ${sub === currentSub ? 'active' : ''}" onclick="selectSub('${sub}')">${sub}</button>`
-    ).join('');
-}
-
-// Override renderSidebar to include "전체 보기"
-function renderSidebar() {
-  renderSidebar2();
-}
-
-// Override selectCat
-function selectCat(cat) {
-  currentCat = cat;
-  currentSub = '__all__';
+function init() {
   renderTopTabs();
-  renderSidebar2();
+  renderSidebar();
   renderMain();
 }
 
